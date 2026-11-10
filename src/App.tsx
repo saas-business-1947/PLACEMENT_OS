@@ -21,26 +21,42 @@ import { Footer } from './components/Footer';
 import { FlyToBag, FlyingBook } from './components/FlyToBag';
 import { getMultiBookOffer } from './utils/pricing';
 import { Check, ShoppingBag, Zap } from 'lucide-react';
+import { supabase } from './utils/supabase';
 
 export default function App() {
-  // Persistence in localStorage
-  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    try {
-      const saved = localStorage.getItem('placement_cart');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  // Initialize cart and wishlist from Supabase on mount
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
 
-  const [wishlistIds, setWishlistIds] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem('placement_wishlist');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  useEffect(() => {
+    // Load cart from Supabase
+    supabase.from('cart_items').select('*').then(({ data: cartData, error }) => {
+      if (!error && cartData) {
+        setCartItems(cartData as CartItem[]);
+      }
+    });
+    // Load wishlist from Supabase
+    supabase.from('wishlist_ids').select('*').then(({ data: wishlistData, error }) => {
+      if (!error && wishlistData) {
+        setWishlistIds(wishlistData.map((item: { id: string }) => item.id));
+      }
+    });
+  }, []);
+
+  // Sync cart to Supabase on changes
+  useEffect(() => {
+    supabase.from('cart_items').upsert(cartItems).then(({ error }) => {
+      if (error) console.error('Error syncing cart to Supabase:', error);
+    });
+  }, [cartItems]);
+
+  // Sync wishlist to Supabase on changes
+  useEffect(() => {
+    const wishlistToSave = wishlistIds.map((id) => ({ id }));
+    supabase.from('wishlist_ids').upsert(wishlistToSave).then(({ error }) => {
+      if (error) console.error('Error syncing wishlist to Supabase:', error);
+    });
+  }, [wishlistIds]);
 
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [readerBook, setReaderBook] = useState<Book | null>(null);
