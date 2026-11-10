@@ -230,7 +230,7 @@ Script for Lower CGPA:
 
   'business-acumen-101': {
     id: 'business-acumen-101',
-    title: 'Business Skills & Commercial Acumen',
+    title: 'The Unhired Mind: Essential Lessons',
     subtitle: 'What Product & Tech Companies Actually Expect Freshers to Understand',
     author: 'Tanvi Mehra',
     version: '2026 Campus Placement Edition',
@@ -396,7 +396,7 @@ Thank you everyone for a collaborative discussion."`
 
   'ultra-learning-tech-skills': {
     id: 'ultra-learning-tech-skills',
-    title: 'Learn Any New Tech Skill in 14 Days',
+    title: 'From No Job to Job Offer in 30 Days',
     subtitle: 'The Accelerated Engineering Sprint Framework to Master Stacks, Frameworks & Tools',
     author: 'Nikhil Rathi',
     version: '2026 Campus Placement Edition',

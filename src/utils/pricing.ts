@@ -20,7 +20,9 @@ export const getMultiBookOffer = (items: CartItem[]): MultiBookOffer | null => {
   if (items.length === 0) return null;
   if (items.some((item) => item.quantity > 1)) return null;
 
-  const tier = MULTI_BOOK_TIERS.find((t) => items.length >= t.count);
+  const tier = MULTI_BOOK_TIERS.slice()
+    .sort((a, b) => b.count - a.count)
+    .find((t) => items.length >= t.count);
   if (!tier) return null;
 
   const subtotal = items.reduce((sum, item) => sum + item.book.price * item.quantity, 0);

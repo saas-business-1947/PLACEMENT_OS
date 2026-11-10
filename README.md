@@ -6,19 +6,19 @@
 
 The library contains **10 e-books** organized into categories:
 
-### AI & Aptitude (₹149 each)
-- **AI for Placement Preparation** - Master AI tools for placement preparation
-- **Cracking Aptitude with AI** - Ace aptitude tests with AI assistance
-- **The GD Round Champion Playbook** - Group discussion strategies and tips
+### Placement & Technical Prep (₹149 each)
+- **AI for Placement Preparation** (₹149) - Master AI tools for placement preparation
+- **Cracking Aptitude with AI** (₹149) - Ace aptitude tests with AI assistance
+- **From No Job to Job Offer in 30 Days** (₹149) - Fast-track placement sprint playbook
 
-### Career Skills (₹99 each)
-- **Resume That Gets Interviews** - Craft a resume that stands out
-- **LinkedIn & Personal Branding for Freshers** - Build your professional brand
-- **DSA & Coding Round Survival Guide** - Prepare for technical interviews
-- **Unshakable Focus & Time Mastery** - Master productivity and time management
-- **Selling Skills for Engineers & Freshers** - Professional communication and sales skills
-- **Fresher Offer & Salary Negotiation** - Negotiate your first job offer
-- **Business Skills & Commercial Acumen** - Understand business fundamentals
+### Career, Communication & Mindset (₹99 each)
+- **The GD & Negotiation Playbook** (₹99) - Group discussion strategies and tips
+- **Unshakable Focus & Time Mastery** (₹99) - Master productivity and eliminate placement anxiety
+- **Selling Skills for Engineers & Freshers** (₹99) - Pitch yourself and your projects with poise
+- **Fresher Offer & Salary Negotiation** (₹99) - Demystify CTC, variable pay & bonus structures
+- **The Unhired Mind: Essential Lessons** (₹99) - Think like a commercial problem-solver
+- **First Company on Github** (₹99) - Navigate corporate culture shock and ship proof of work
+- **Time & Attention Architecture for Final Years** (₹99) - Protect unbroken daily focus blocks
 
 ## 💰 Pricing
 
