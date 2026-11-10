@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BOOKS, Book, BUNDLE_DEAL } from './data/books';
 import { CartItem, OrderConfirmation } from './types';
@@ -18,6 +18,8 @@ import { CheckoutModal } from './components/CheckoutModal';
 import { StudentGuidanceSection } from './components/StudentGuidanceSection';
 import { FaqSection } from './components/FaqSection';
 import { Footer } from './components/Footer';
+import { FlyToBag, FlyingBook } from './components/FlyToBag';
+import { getMultiBookOffer } from './utils/pricing';
 import { Check, ShoppingBag, Zap } from 'lucide-react';
 
 export default function App() {
@@ -49,6 +51,23 @@ export default function App() {
   const [checkoutPromoCode, setCheckoutPromoCode] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [notification, setNotification] = useState<string | null>(null);
+
+  // "Fly to bag" animation state: last pointer position + books in flight
+  const pointerRef = useRef({
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2,
+  });
+  const flyIdRef = useRef(0);
+  const [flyingBooks, setFlyingBooks] = useState<FlyingBook[]>([]);
+  const [bagPulse, setBagPulse] = useState(0);
+
+  useEffect(() => {
+    const trackPointer = (e: PointerEvent) => {
+      pointerRef.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener('pointerdown', trackPointer, { passive: true });
+    return () => window.removeEventListener('pointerdown', trackPointer);
+  }, []);
 
   // Theme toggle state with persistence
   const [isDark, setIsDark] = useState<boolean>(() => {
@@ -111,24 +130,32 @@ export default function App() {
       }
       return [...prev, { book, quantity: 1, format }];
     });
+
+    // Send the cover flying into the navbar bag icon.
+    flyIdRef.current += 1;
+    const flyId = flyIdRef.current;
+    setFlyingBooks((prev) => [
+      { id: flyId, from: pointerRef.current, image: book.coverImage },
+      ...prev,
+    ]);
+
     showNotification(`"${book.title}" added to your bag.`);
   };
 
   const handleAddBundleToCart = () => {
-    // Add all 10 books at bundle discounted price
-    // Each book priced proportionally to equal ₹899 total
+    // All 10 books go in at their normal price; the 10-book tier in the cart
+    // brings the total down to the flat library price.
     const bundleItems: CartItem[] = BOOKS.map((book) => ({
-      book: {
-        ...book,
-        price: Math.round(BUNDLE_DEAL.price / BOOKS.length), // ₹90 each -> ₹899 total
-      },
+      book,
       quantity: 1,
       format: 'Complete 10-Book Survival Kit Bundle (PDF + EPUB)',
     }));
 
     setCartItems(bundleItems);
     setIsCartOpen(true);
-    showNotification('🎉 All 10 E-Books added at the special ₹899 student bundle price!');
+    showNotification(
+      `🎉 All 10 E-Books added — the full library price of ₹${BUNDLE_DEAL.price} is applied in the bag.`
+    );
   };
 
   const handleUpdateQuantity = (bookId: string, delta: number) => {
@@ -174,7 +201,8 @@ export default function App() {
   };
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  const cartTotal = cartItems.reduce((acc, item) => acc + item.book.price * item.quantity, 0);
+  const cartSubtotal = cartItems.reduce((acc, item) => acc + item.book.price * item.quantity, 0);
+  const cartTotal = cartSubtotal - (getMultiBookOffer(cartItems)?.amount ?? 0);
   const wishlistBooks = BOOKS.filter((b) => wishlistIds.includes(b.id));
   const featuredBook = BOOKS[0]; // AI for Placements
 
@@ -217,7 +245,18 @@ export default function App() {
         onAddBundleToCart={handleAddBundleToCart}
         isDark={isDark}
         onToggleTheme={() => setIsDark((prev) => !prev)}
+        bagPulse={bagPulse}
       />
+
+      {/* Book flying into the bag icon */}
+      {flyingBooks.map((fb) => (
+        <FlyToBag
+          key={fb.id}
+          book={fb}
+          onLanded={() => setBagPulse((p) => p + 1)}
+          onDone={(id) => setFlyingBooks((prev) => prev.filter((b) => b.id !== id))}
+        />
+      ))}
 
       {/* Main Content */}
       <main>

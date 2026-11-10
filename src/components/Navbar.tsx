@@ -1,7 +1,9 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import { ShoppingBag, Bookmark, Search, GraduationCap, Sparkles, Sun, Moon } from 'lucide-react';
 import { Currency } from '../types';
 import { formatPrice } from '../utils/format';
+import { BUNDLE_DEAL } from '../data/books';
 
 interface NavbarProps {
   cartCount: number;
@@ -14,6 +16,8 @@ interface NavbarProps {
   onAddBundleToCart: () => void;
   isDark: boolean;
   onToggleTheme: () => void;
+  /** Increments each time a book lands in the bag, to replay the bag animation. */
+  bagPulse?: number;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -27,13 +31,17 @@ export const Navbar: React.FC<NavbarProps> = ({
   onAddBundleToCart,
   isDark,
   onToggleTheme,
+  bagPulse = 0,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-[#FAF8F5]/95 dark:bg-[#121214]/95 backdrop-blur-md border-b border-stone-200/80 dark:border-stone-800 transition-colors">
       {/* Slim Top Notice Banner */}
       <div className="bg-stone-900 dark:bg-stone-950 text-stone-200 py-1.5 px-4 text-center text-[11px] sm:text-xs font-medium flex items-center justify-center gap-2 border-b border-stone-800/50">
         <span className="text-amber-300 font-semibold">Campus Placement Special:</span>
-        <span>Get all 10 E-Books for ₹899 (Save 64%) with instant PDF downloads</span>
+        <span>
+          Get all 10 E-Books for {formatPrice(BUNDLE_DEAL.price, 'INR')} (Save{' '}
+          {BUNDLE_DEAL.savingsPercent}%) with instant PDF downloads
+        </span>
         <button
           onClick={onAddBundleToCart}
           className="ml-2 underline text-amber-200 hover:text-white cursor-pointer font-semibold"
@@ -67,7 +75,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="text-stone-900 dark:text-amber-300 font-semibold hover:text-stone-700 dark:hover:text-amber-200 transition-colors whitespace-nowrap shrink-0 cursor-pointer flex items-center gap-1"
           >
             <span>All-Access Bundle</span>
-            <span className="text-[10px] bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 px-1.5 py-0.5 rounded font-mono">₹899</span>
+            <span className="text-[10px] bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 px-1.5 py-0.5 rounded font-mono">
+              {formatPrice(BUNDLE_DEAL.price, 'INR')}
+            </span>
           </button>
           <button
             onClick={onOpenSampleReader}
@@ -138,11 +148,39 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={onOpenCart}
             className="flex items-center gap-2 px-3.5 sm:px-4 py-2 text-xs font-medium text-white bg-stone-900 dark:bg-stone-100 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-white rounded-lg transition-colors whitespace-nowrap shrink-0 shadow-xs cursor-pointer"
           >
-            <ShoppingBag className="w-3.5 h-3.5" />
+            {/* Bag icon: catches each book that flies in */}
+            <motion.span
+              key={bagPulse}
+              id="bag-icon-target"
+              className="relative inline-flex items-center justify-center"
+              initial={false}
+              animate={
+                bagPulse > 0
+                  ? { scale: [1, 1.45, 0.85, 1.1, 1], rotate: [0, -10, 7, -3, 0] }
+                  : { scale: 1, rotate: 0 }
+              }
+              transition={{ duration: 0.55, ease: 'easeInOut' }}
+            >
+              <ShoppingBag className="w-3.5 h-3.5" />
+              {bagPulse > 0 && (
+                <motion.span
+                  className="absolute inset-0 rounded-full bg-amber-400/50 dark:bg-amber-400/40"
+                  initial={{ scale: 0.4, opacity: 0.9 }}
+                  animate={{ scale: 2.4, opacity: 0 }}
+                  transition={{ duration: 0.6, ease: 'easeOut' }}
+                />
+              )}
+            </motion.span>
             <span>Bag</span>
-            <span className="bg-stone-800 dark:bg-stone-200 text-amber-200 dark:text-stone-900 px-1.5 py-0.2 rounded text-[11px] tabular-nums font-mono font-bold">
+            <motion.span
+              key={`count-${bagPulse}`}
+              initial={false}
+              animate={bagPulse > 0 ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+              transition={{ duration: 0.45, ease: 'easeOut' }}
+              className="bg-stone-800 dark:bg-stone-200 text-amber-200 dark:text-stone-900 px-1.5 py-0.2 rounded text-[11px] tabular-nums font-mono font-bold"
+            >
               {cartCount}
-            </span>
+            </motion.span>
             {cartTotal > 0 && (
               <span className="hidden sm:inline font-mono border-l border-stone-700 dark:border-stone-300 pl-2">
                 {formatPrice(cartTotal, 'INR')}

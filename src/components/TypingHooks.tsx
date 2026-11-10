@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Terminal, Copy, Check, RotateCcw, Sparkles, Layers, ArrowRight } from 'lucide-react';
+import { BUNDLE_DEAL } from '../data/books';
+import { formatPrice } from '../utils/format';
 
 export const PLACEMENT_HOOKS = [
   "Crack your dream campus offer while your batchmates are still doomscrolling LinkedIn.",
@@ -15,7 +17,7 @@ interface TypingHooksProps {
 }
 
 export const TypingHooks: React.FC<TypingHooksProps> = ({ onAddBundleToCart }) => {
-  const [viewMode, setViewMode] = useState<'simultaneous' | 'cycling'>('simultaneous');
+  const [viewMode, setViewMode] = useState<'simultaneous' | 'cycling'>('cycling');
 
   // --- Simultaneous Typing State ---
   const [simultaneousProgress, setSimultaneousProgress] = useState(0);
@@ -23,8 +25,11 @@ export const TypingHooks: React.FC<TypingHooksProps> = ({ onAddBundleToCart }) =
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const maxLength = Math.max(...PLACEMENT_HOOKS.map((h) => h.length));
+  const longestHook = PLACEMENT_HOOKS.reduce((a, b) => (b.length > a.length ? b : a), '');
 
   useEffect(() => {
+    if (viewMode !== 'simultaneous') return;
+
     let timer: NodeJS.Timeout;
 
     if (!simultaneousIsDeleting) {
@@ -54,7 +59,7 @@ export const TypingHooks: React.FC<TypingHooksProps> = ({ onAddBundleToCart }) =
     }
 
     return () => clearTimeout(timer);
-  }, [simultaneousProgress, simultaneousIsDeleting, maxLength]);
+  }, [simultaneousProgress, simultaneousIsDeleting, maxLength, viewMode]);
 
   const handleRestartSimultaneous = () => {
     setSimultaneousIsDeleting(false);
@@ -71,10 +76,10 @@ export const TypingHooks: React.FC<TypingHooksProps> = ({ onAddBundleToCart }) =
   const [currentHookIdx, setCurrentHookIdx] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
   const [isDeletingSingle, setIsDeletingSingle] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
 
+  // Type the first hook out from a clean slate whenever the headline mode mounts.
   useEffect(() => {
-    if (viewMode !== 'cycling' || isPaused) return;
+    if (viewMode !== 'cycling') return;
 
     const currentFullText = PLACEMENT_HOOKS[currentHookIdx];
     let timer: NodeJS.Timeout;
@@ -101,7 +106,7 @@ export const TypingHooks: React.FC<TypingHooksProps> = ({ onAddBundleToCart }) =
     }
 
     return () => clearTimeout(timer);
-  }, [displayedText, isDeletingSingle, currentHookIdx, viewMode, isPaused]);
+  }, [displayedText, isDeletingSingle, currentHookIdx, viewMode]);
 
   return (
     <div className="w-full mb-6">
@@ -251,7 +256,7 @@ export const TypingHooks: React.FC<TypingHooksProps> = ({ onAddBundleToCart }) =
                 onClick={onAddBundleToCart}
                 className="font-semibold text-stone-900 dark:text-amber-300 hover:underline flex items-center gap-1 cursor-pointer"
               >
-                <span>Unlock All 10 Playbooks (₹899)</span>
+                <span>Unlock All 10 Playbooks ({formatPrice(BUNDLE_DEAL.price, 'INR')})</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             )}
@@ -261,51 +266,24 @@ export const TypingHooks: React.FC<TypingHooksProps> = ({ onAddBundleToCart }) =
 
       {/* Mode 2: Sequential Giant Headline Typewriter */}
       {viewMode === 'cycling' && (
-        <div className="space-y-4">
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-stone-900 dark:text-stone-100 leading-[1.08] min-h-[160px] sm:min-h-[190px] lg:min-h-[210px] flex items-center"
-            style={{ textWrap: 'balance' }}
-          >
-            <span>
-              {displayedText}
-              <span className="inline-block w-3 sm:w-3.5 h-8 sm:h-10 ml-1.5 bg-amber-500 dark:bg-amber-400 align-middle animate-pulse" />
-            </span>
-          </motion.h1>
+        <motion.h1
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          className="relative font-editorial text-4xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-stone-900 dark:text-stone-100 leading-[1.12] min-h-[132px] sm:min-h-[168px] lg:min-h-[202px]"
+        >
+          {/* Invisible spacer: reserves the height of the longest hook so the
+              headline never shifts the page while it types or rotates. */}
+          <span aria-hidden="true" className="invisible block">
+            {longestHook}
+          </span>
 
-          {/* Interactive Hook Selector Pills */}
-          <div className="flex flex-wrap items-center gap-2 pt-1 pb-2">
-            <span className="text-[11px] text-stone-400 dark:text-stone-500 uppercase tracking-wider font-mono mr-1">
-              Select Hook:
-            </span>
-            {PLACEMENT_HOOKS.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => {
-                  setCurrentHookIdx(i);
-                  setDisplayedText('');
-                  setIsDeletingSingle(false);
-                }}
-                className={`w-7 h-7 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-center ${
-                  currentHookIdx === i
-                    ? 'bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 shadow-xs scale-105'
-                    : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700'
-                }`}
-              >
-                0{i + 1}
-              </button>
-            ))}
-
-            <button
-              onClick={() => setIsPaused(!isPaused)}
-              className="ml-2 text-xs text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 underline font-mono cursor-pointer"
-            >
-              {isPaused ? '▶ Resume' : '⏸ Pause'}
-            </button>
-          </div>
-        </div>
+          {/* Typed headline, anchored at the top of the reserved space */}
+          <span className="absolute inset-0 block">
+            {displayedText}
+            <span className="inline-block w-3 sm:w-3.5 h-8 sm:h-10 lg:h-12 ml-1.5 -mt-1 bg-amber-500 dark:bg-amber-400 align-middle animate-pulse" />
+          </span>
+        </motion.h1>
       )}
     </div>
   );

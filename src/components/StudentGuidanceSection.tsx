@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Bot, Brain, Users, Compass, Clock, ShieldAlert, Sparkles, ArrowRight } from 'lucide-react';
+import { Bot, Users, Compass, ShieldAlert, Sparkles, ArrowRight, FileText, Code2 } from 'lucide-react';
 import { BUNDLE_DEAL } from '../data/books';
 import { formatPrice } from '../utils/format';
 
@@ -49,22 +49,22 @@ export const StudentGuidanceSection: React.FC<StudentGuidanceSectionProps> = ({
       action: 'Decode base pay, evaluate multiple offers, and talk like a product owner.',
     },
     {
-      icon: Clock,
-      problem: 'Balancing 8th Sem, Project & Sleep',
+      icon: FileText,
+      problem: 'Resume Rejections & Zero Callbacks',
       tag: 'Problem #5',
       description:
-        'Mandatory 75% attendance, final semester project reviews, and constant placement drives leaving you emotionally depleted.',
-      solution: 'Time Architecture for Final Years + Monk Mode Focus',
-      action: 'The 3-hour unbroken golden block system to out-prepare without burning out.',
+        'Hundreds of applications sent with no replies, because the resume never parsed or the bullets describe duties instead of results.',
+      solution: 'Resume That Gets Interviews + LinkedIn & Personal Branding',
+      action: 'Rebuild the one-page resume and profile recruiters actually search for.',
     },
     {
-      icon: Brain,
-      problem: 'WhatsApp Peer Comparison & Anxiety',
+      icon: Code2,
+      problem: 'Coding Rounds & Technical Assessments',
       tag: 'Problem #6',
       description:
-        'Seeing friends post offer letters while facing consecutive rejections triggers paralyzing imposter syndrome and doomscrolling.',
-      solution: 'From Campus to Cubicle + Mental Mastery Guide',
-      action: 'The 24-hour rejection recovery protocol and sustainable mental stamina.',
+        'Solving hundreds of practice problems but freezing in the 90-minute company test when the timer and test cases are real.',
+      solution: 'DSA & Coding Round Survival Guide',
+      action: 'Trade random practice for the five patterns and a 30-day revision plan.',
     },
   ];
 
@@ -153,7 +153,7 @@ export const StudentGuidanceSection: React.FC<StudentGuidanceSectionProps> = ({
               Ready to eliminate placement stress?
             </h3>
             <p className="text-xs text-stone-400 max-w-lg">
-              Download the complete 10-book survival kit for ₹899 or choose the individual playbook for your immediate upcoming drive.
+              Download the complete 10-book survival kit for {formatPrice(BUNDLE_DEAL.price, 'INR')} or choose the individual playbook for your immediate upcoming drive.
             </p>
           </div>
 

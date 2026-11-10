@@ -598,9 +598,15 @@ export const BUNDLE_DEAL = {
   id: 'final-year-all-access-bundle',
   title: 'The Complete Final Year Placement & Career Survival Kit',
   subtitle: 'All 10 E-Books + AI Prompt Cheat Sheets + GD Audio Frameworks + In-Hand CTC Calculator',
-  price: 899,
-  originalPrice: 2490,
-  savingsPercent: 64,
+  price: 699,
+  originalPrice: 1140,
+  savingsPercent: 39,
   description: 'Everything a final-year college student needs to conquer placement drives, master AI interview tools, clear aptitude eliminations, negotiate higher packages, and protect mental wellbeing.',
   includedBookIds: BOOKS.map(b => b.id)
 };
+
+export const MULTI_BOOK_TIERS = [
+  { count: 3, price: 249, label: 'Any 3' },
+  { count: 5, price: 399, label: 'Any 5' },
+  { count: 10, price: 699, label: 'Complete 10' }
+];

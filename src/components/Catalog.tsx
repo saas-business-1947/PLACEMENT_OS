@@ -21,8 +21,7 @@ type CategoryFilter =
   | 'AI & Tech Prep'
   | 'Aptitude & Rounds'
   | 'Communication & GD'
-  | 'Career & Business'
-  | 'Mental Mastery & Time';
+  | 'Career & Business';
 
 type SortOption = 'curated' | 'price-asc' | 'price-desc' | 'pages-desc';
 
@@ -46,7 +45,6 @@ export const Catalog: React.FC<CatalogProps> = ({
     'Aptitude & Rounds',
     'Communication & GD',
     'Career & Business',
-    'Mental Mastery & Time',
   ];
 
   const filteredBooks = useMemo(() => {
@@ -89,7 +87,7 @@ export const Catalog: React.FC<CatalogProps> = ({
                   All-In-One Campus Bundle
                 </span>
                 <span className="text-xs text-stone-300 font-mono">
-                  10 E-Books · ₹899 Total
+                  10 E-Books · {formatPrice(BUNDLE_DEAL.price, 'INR')} Total
                 </span>
               </div>
 
@@ -130,8 +128,15 @@ export const Catalog: React.FC<CatalogProps> = ({
                   {formatPrice(BUNDLE_DEAL.originalPrice, 'INR')}
                 </span>
               </div>
-              <div className="text-xs text-emerald-400 font-medium mb-4">
-                Save ₹1,591 (64% Off Bundle Price)
+              <div className="text-xs text-emerald-400 font-medium mb-2">
+                Save {formatPrice(BUNDLE_DEAL.originalPrice - BUNDLE_DEAL.price, 'INR')} (
+                {BUNDLE_DEAL.savingsPercent}% Off Buying Separately)
+              </div>
+
+              <div className="flex flex-wrap gap-1.5 text-[10px] font-mono text-stone-300 mb-4">
+                <span className="px-1.5 py-0.5 rounded bg-stone-700/70">Any 3 → ₹249</span>
+                <span className="px-1.5 py-0.5 rounded bg-stone-700/70">Any 5 → ₹399</span>
+                <span className="px-1.5 py-0.5 rounded bg-amber-300 text-stone-950 font-bold">All 10 → {formatPrice(BUNDLE_DEAL.price, 'INR')}</span>
               </div>
 
               <motion.button
@@ -141,7 +146,7 @@ export const Catalog: React.FC<CatalogProps> = ({
                 className="w-full py-3 px-5 text-xs font-bold text-stone-900 bg-amber-300 hover:bg-amber-200 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
               >
                 <Zap className="w-4 h-4 fill-stone-900" />
-                <span>Get All 10 Books for ₹899</span>
+                <span>Get All 10 Books for {formatPrice(BUNDLE_DEAL.price, 'INR')}</span>
               </motion.button>
             </div>
           </div>
@@ -191,7 +196,7 @@ export const Catalog: React.FC<CatalogProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search aptitude, AI, GD, focus..."
+                placeholder="Search resume, aptitude, AI, GD, DSA..."
                 className="w-full pl-9 pr-3 py-1.5 text-xs bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-lg text-stone-800 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:ring-1 focus:ring-stone-800 dark:focus:ring-amber-400 transition-all"
               />
               {searchQuery && (

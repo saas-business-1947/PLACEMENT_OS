@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CartItem } from '../types';
-import { BUNDLE_DEAL } from '../data/books';
+import { BUNDLE_DEAL, MULTI_BOOK_TIERS } from '../data/books';
 import { formatPrice } from '../utils/format';
+import { getMultiBookOffer } from '../utils/pricing';
 import { X, Trash2, Plus, Minus, ArrowRight, ShieldCheck, Tag, Zap } from 'lucide-react';
 
 interface CartDrawerProps {
@@ -33,14 +34,22 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     0
   );
 
-  let discountAmount = 0;
+  const multiBookOffer = getMultiBookOffer(items);
+  const multiBookDiscount = multiBookOffer?.amount ?? 0;
+
+  let promoDiscount = 0;
   if (appliedPromo === 'STUDENT50') {
-    discountAmount = Math.min(rawSubtotal, 50);
+    promoDiscount = Math.min(rawSubtotal, 50);
   } else if (appliedPromo === 'CAMPUS10') {
-    discountAmount = Math.round(rawSubtotal * 0.1);
+    promoDiscount = Math.round(rawSubtotal * 0.1);
   }
 
+  const discountAmount = multiBookDiscount + promoDiscount;
   const finalTotal = Math.max(0, rawSubtotal - discountAmount);
+
+  const nextTier = MULTI_BOOK_TIERS.slice()
+    .reverse()
+    .find((tier) => items.length < tier.count);
 
   const handleApplyPromo = (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,21 +108,47 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
         {/* Item List / Empty state */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {/* Bundle Upsell Banner if only 1-3 books in cart */}
-          {!hasAllBooks && items.length > 0 && rawSubtotal < BUNDLE_DEAL.price && (
+          {/* Multi-book tier upsell */}
+          {!hasAllBooks && items.length > 0 && (
             <div className="p-4 bg-amber-50 dark:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-800/60 text-xs text-amber-950 dark:text-amber-200 space-y-2">
               <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-300">
                 <Zap className="w-4 h-4 fill-amber-500 text-amber-600 dark:fill-amber-400 dark:text-amber-300" />
-                <span>Student Bundle Deal Available!</span>
+                <span>
+                  {multiBookOffer ? 'Multi-book price applied!' : 'Add more, pay less'}
+                </span>
               </div>
               <p className="text-[11px] text-amber-800 dark:text-amber-300 leading-relaxed">
-                Get ALL 10 E-Books (Aptitude, AI Prep, GD, Negotiation, Tech Sprint, Work-Life) for just <strong>₹899</strong> (Save 64%).
+                {nextTier ? (
+                  <>
+                    Add <strong>{nextTier.count - items.length}</strong>{' '}
+                    {nextTier.count - items.length === 1 ? 'more book' : 'more books'} and the
+                    cart drops to <strong>{formatPrice(nextTier.price, 'INR')}</strong> for{' '}
+                    {nextTier.count}. The full 10-book library is{' '}
+                    <strong>{formatPrice(BUNDLE_DEAL.price, 'INR')}</strong>.
+                  </>
+                ) : (
+                  <>Get the complete 10-book library for just <strong>{formatPrice(BUNDLE_DEAL.price, 'INR')}</strong>.</>
+                )}
               </p>
+              <div className="flex flex-wrap gap-1.5 text-[10px] font-mono">
+                {MULTI_BOOK_TIERS.map((tier) => (
+                  <span
+                    key={tier.count}
+                    className={`px-1.5 py-0.5 rounded border ${
+                      items.length >= tier.count
+                        ? 'bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300'
+                        : 'bg-white/70 dark:bg-stone-900/60 border-amber-200 dark:border-amber-800'
+                    }`}
+                  >
+                    {tier.count === 10 ? 'All 10' : `Any ${tier.count}`} → {formatPrice(tier.price, 'INR')}
+                  </span>
+                ))}
+              </div>
               <button
                 onClick={onUpgradeToBundle}
                 className="w-full py-2 px-3 text-xs font-bold bg-amber-300 hover:bg-amber-400 text-stone-900 rounded-lg transition-colors cursor-pointer"
               >
-                Upgrade to All 10 Books for ₹899
+                Upgrade to All 10 Books for {formatPrice(BUNDLE_DEAL.price, 'INR')}
               </button>
             </div>
           )}
@@ -124,7 +159,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 Your cart is empty
               </p>
               <p className="text-xs text-stone-500 dark:text-stone-400 max-w-xs mx-auto mb-6">
-                Pick any of our 10 placement survival playbooks or grab the full bundle for ₹899.
+                Pick any of our 10 placement survival playbooks or grab the full library for {formatPrice(BUNDLE_DEAL.price, 'INR')}.
               </p>
               <button
                 onClick={onClose}
@@ -261,11 +296,20 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 </span>
               </div>
 
-              {discountAmount > 0 && (
+              {multiBookOffer && (
+                <div className="flex justify-between text-emerald-700 dark:text-emerald-400 font-semibold">
+                  <span>{multiBookOffer.label}</span>
+                  <span className="font-mono tabular-nums">
+                    -{formatPrice(multiBookDiscount, 'INR')}
+                  </span>
+                </div>
+              )}
+
+              {promoDiscount > 0 && (
                 <div className="flex justify-between text-emerald-700 dark:text-emerald-400 font-semibold">
                   <span>Student Discount</span>
                   <span className="font-mono tabular-nums">
-                    -{formatPrice(discountAmount, 'INR')}
+                    -{formatPrice(promoDiscount, 'INR')}
                   </span>
                 </div>
               )}

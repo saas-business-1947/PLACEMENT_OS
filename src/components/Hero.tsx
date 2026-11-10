@@ -59,8 +59,10 @@ export const Hero: React.FC<HeroProps> = ({
                 className="inline-flex items-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-stone-900 hover:bg-stone-800 dark:bg-amber-400 dark:text-stone-950 dark:hover:bg-amber-300 rounded-lg transition-colors shadow-md cursor-pointer"
               >
                 <Zap className="w-4 h-4 text-amber-300 dark:text-stone-950 fill-current" />
-                <span>Get All 10 E-Books for ₹899</span>
-                <span className="text-xs text-stone-400 dark:text-stone-700 line-through font-mono">₹2,490</span>
+                <span>Get All 10 E-Books for {formatPrice(BUNDLE_DEAL.price, 'INR')}</span>
+                <span className="text-xs text-stone-400 dark:text-stone-700 line-through font-mono">
+                  {formatPrice(BUNDLE_DEAL.originalPrice, 'INR')}
+                </span>
               </motion.button>
 
               <motion.button
@@ -139,7 +141,13 @@ export const Hero: React.FC<HeroProps> = ({
                       {formatPrice(featuredBook.originalPrice, 'INR')}
                     </span>
                     <span className="text-[11px] text-amber-300 font-semibold">
-                      Save 64%
+                      Save{' '}
+                      {Math.round(
+                        ((featuredBook.originalPrice - featuredBook.price) /
+                          featuredBook.originalPrice) *
+                          100
+                      )}
+                      %
                     </span>
                   </div>
 

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Smartphone, Laptop, CheckCircle2 } from 'lucide-react';
+import { BUNDLE_DEAL } from '../data/books';
+import { formatPrice } from '../utils/format';
 
 interface FaqItem {
   question: string;
@@ -35,7 +37,7 @@ const FAQS: FaqItem[] = [
   {
     question: 'How does the All-in-One 10-Book Bundle work?',
     answer:
-      'The bundle gives you instant access to all 10 E-Books (Aptitude with AI, Placement AI prompts, GD rounds, salary negotiation, tech learning sprint, work-life balance, time management, focus, sales, and business skills) for a flat ₹899 instead of buying them separately for ₹2,490. You save 64% and get lifetime access.',
+      `The bundle gives you instant access to all 10 E-Books (AI placement prep, aptitude with AI, 14-day tech learning sprint, GD rounds, selling skills, salary negotiation, business acumen, ATS resumes, LinkedIn branding and DSA coding rounds) for a flat ${formatPrice(BUNDLE_DEAL.price, 'INR')} instead of buying them separately for ${formatPrice(BUNDLE_DEAL.originalPrice, 'INR')}. You save ${BUNDLE_DEAL.savingsPercent}% and get lifetime access. Smaller tiers are available too: any 3 books for ₹249 or any 5 books for ₹399.`,
   },
 ];
 
