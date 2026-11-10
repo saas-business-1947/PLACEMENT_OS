@@ -1,0 +1,6 @@
+{
+  "name": "PlacementOS - Final Year Placement & AI Stress E-Books for College Students",
+  "description": "Curated digital survival guides for final year college students to crack campus placements with AI, master aptitude, GDs, salary negotiation, and beat stress.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
